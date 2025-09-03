@@ -72,9 +72,7 @@ export default function Experience() {
           </ul>
         </div>
 
-        <p className="mt-8 text-center text-sm text-gray-600">
-          Yes — it’s okay to display company names; it’s standard practice.
-        </p>
+        
       </div>
     </section>
   );

@@ -4,15 +4,34 @@ import { useState } from "react";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const mailto = `mailto:youremail@example.com?subject=Portfolio%20Inquiry%20from%20${encodeURIComponent(
-    form.name || "Visitor"
-  )}&body=${encodeURIComponent(form.message)}%0D%0A%0D%0AFrom:%20${encodeURIComponent(
-    form.email
-  )}`;
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(form),
+      });
+
+      if(res.ok) {
+        setStatus("success");
+        setForm({name: "", email: "", message: ""});
+      } else {
+        setStatus("error");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+    }
+  };
+
 
   return (
     <section id="contact" className="py-20 px-6">
@@ -24,10 +43,7 @@ export default function Contact() {
 
         <form
           className="mt-8 space-y-4 rounded-2xl border bg-white p-6 shadow-sm"
-          onSubmit={(e) => {
-            e.preventDefault();
-            window.location.href = mailto; // simple no-backend fallback
-          }}
+          onSubmit={onSubmit}
         >
           <div>
             <label className="mb-1 block text-sm font-medium">Name</label>
@@ -68,30 +84,20 @@ export default function Contact() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
+              disabled={status === "loading"}
               className="rounded-xl bg-blue-600 px-5 py-2 font-medium text-white transition hover:brightness-110 active:scale-[0.99]"
             >
-              Send
+              {status === "loading" ? "Sending..." : "Send"}
             </button>
-            <a
-              href="mailto:youremail@example.com"
-              className="text-blue-600 underline-offset-2 hover:underline"
-            >
-              Or email directly
-            </a>
           </div>
-        </form>
 
-        <div className="mt-6 flex justify-center gap-6 text-sm">
-          <a className="text-blue-600 hover:underline" href="https://github.com/yourgithub" target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          <a className="text-blue-600 hover:underline" href="https://www.linkedin.com/in/yourprofile" target="_blank" rel="noreferrer">
-            LinkedIn
-          </a>
-          <a className="text-blue-600 hover:underline" href="https://x.com/yourhandle" target="_blank" rel="noreferrer">
-            X (Twitter)
-          </a>
-        </div>
+          {status === "success" && (
+            <p className="text-green-600">✅ Message sent successfully!</p>
+          )}
+          {status === "error" && (
+            <p className="text-red-600">❌ Something went wrong. Try again later.</p>
+          )}
+        </form>
       </div>
     </section>
   );
