@@ -4,10 +4,13 @@ import { useState } from "react";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,13 +19,13 @@ export default function Contact() {
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      if(res.ok) {
+      if (res.ok) {
         setStatus("success");
-        setForm({name: "", email: "", message: ""});
+        setForm({ name: "", email: "", message: "" });
       } else {
         setStatus("error");
       }
@@ -31,7 +34,6 @@ export default function Contact() {
       setStatus("error");
     }
   };
-
 
   return (
     <section id="contact" className="py-20 px-6">
@@ -95,7 +97,9 @@ export default function Contact() {
             <p className="text-green-600">✅ Message sent successfully!</p>
           )}
           {status === "error" && (
-            <p className="text-red-600">❌ Something went wrong. Try again later.</p>
+            <p className="text-red-600">
+              ❌ Something went wrong. Try again later.
+            </p>
           )}
         </form>
       </div>
