@@ -7,7 +7,6 @@ interface Repo {
   name: string;
   description: string;
   url: string;
-  stars: number;
   language: string;
   updated_at: string;
 }
@@ -47,7 +46,6 @@ export default function GithubRepos() {
                   {repo.description || "No description"}
                 </p>
                 <div className="mt-3 flex gap-4 text-sm text-gray-500">
-                  <span>⭐ {repo.stars}</span>
                   {repo.language && <span>{repo.language}</span>}
                 </div>
               </a>
