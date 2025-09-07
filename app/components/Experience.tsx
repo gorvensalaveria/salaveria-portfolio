@@ -57,7 +57,8 @@ export default function Experience() {
                     ].join(" ")}
                   >
                     <h3 className="text-lg font-semibold">
-                      {item.role} <span className="text-gray-500">@ {item.company}</span>
+                      {item.role}{" "}
+                      <span className="text-gray-500">@ {item.company}</span>
                     </h3>
                     <p className="text-sm text-gray-500">{item.period}</p>
                     <ul className="mt-3 list-disc space-y-1 pl-5 text-gray-700">
@@ -71,8 +72,6 @@ export default function Experience() {
             })}
           </ul>
         </div>
-
-        
       </div>
     </section>
   );
