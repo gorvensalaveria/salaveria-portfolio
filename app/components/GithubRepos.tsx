@@ -1,58 +1,45 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
-interface Repo {
-  id: number;
-  name: string;
-  description: string;
-  url: string;
-  language: string;
-  updated_at: string;
-}
+type RepoCommit = {
+  repo: string;
+  commitCount: number;
+};
 
 export default function GithubRepos() {
-  const [repos, setRepos] = useState<Repo[]>([]);
+  const [repos, setRepos] = useState<RepoCommit[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/github")
-      .then((res) => res.json())
-      .then((data) => {
-        setRepos(data);
+    async function fetchCommits() {
+      try {
+        const res = await fetch("/api/github");
+        const data = await res.json();
+        setRepos(data.repos);
+      } catch (error) {
+        console.error("Error fetching commits:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    }
+    fetchCommits();
   }, []);
-  return (
-    <section id="github" className="py-20 px-6 bg-gray-50">
-      <div className="mx-auto max-w-4x1">
-        <h2 className="text-3xl font-bold text-center">Github Projects</h2>
 
-        {loading ? (
-          <p className="text-center mt-6">Loading...</p>
-        ) : (
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {repos.map((repo) => (
-              <a
-                key={repo.id}
-                href={repo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-xl border bg-white p-5 shadow hover:shadow-md transition"
-              >
-                <h3 className="text-xl font-semibold">{repo.name}</h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  {repo.description || "No description"}
-                </p>
-                <div className="mt-3 flex gap-4 text-sm text-gray-500">
-                  {repo.language && <span>{repo.language}</span>}
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+  return (
+    <div className="p-4 border rounded-lg shadow">
+      <h2 className="text-xl font-semibold mb-2">GitHub Commits</h2>
+      {loading ? (
+        <p>Loading commits...</p>
+      ) : (
+        <ul className="space-y-2">
+          {repos.map((repo) => (
+            <li key={repo.repo} className="flex justify-between">
+              <span>{repo.repo}</span>
+              <span>{repo.commitCount} commits</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
